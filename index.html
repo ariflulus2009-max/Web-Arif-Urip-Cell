@@ -78,16 +78,28 @@ body.embed-mode .hero{margin-bottom:14px}
 </div></div>
 </section>
 
-<footer>Arif Urip Cell • Katalog & Inventory V1</footer>
+<footer>Arif Urip Cell • Katalog & Inventory V2 • Supabase</footer>
 
-<div id="loginModal" class="modal"><div class="modalbox"><h2>Login Admin</h2><input id="loginUser" placeholder="Username"><br><br><input id="loginPass" type="password" placeholder="Password"><br><br><div class="row"><button class="primary" onclick="login()">Masuk</button><button class="secondary" onclick="closeLogin()">Batal</button></div><p id="loginErr" style="color:#c62828"></p></div></div>
+<div id="loginModal" class="modal"><div class="modalbox"><h2>Login Admin</h2><input id="loginUser" type="email" placeholder="Email Admin"><br><br><input id="loginPass" type="password" placeholder="Password"><br><br><div class="row"><button class="primary" onclick="login()">Masuk</button><button class="secondary" onclick="closeLogin()">Batal</button></div><p id="loginErr" style="color:#c62828"></p></div></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 const SUPABASE_URL = "https://rsnhiksvrfgfgkmcqdhf.supabase.co";
 const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_QANLOYAZcvPWWjVaIksE1Q_bJp-TxPB";
-const sb = supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
+let sb = null;
 const WA = "6282183345533";
+
+function openLogin(){ $("loginModal").classList.add("show"); }
+function closeLogin(){ $("loginModal").classList.remove("show"); $("loginErr").textContent=""; }
+
+function initSupabase(){
+  if (!window.supabase) {
+    $("loginErr").textContent = "Koneksi library Supabase belum siap. Pastikan internet aktif, lalu coba lagi.";
+    return false;
+  }
+  if (!sb) sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
+  return true;
+}
 
 let products=[], inventory={}, editId=null, importRows=[];
 const $=id=>document.getElementById(id);
@@ -97,6 +109,10 @@ function esc(s){return String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&l
 async function loadData(){
  if(SUPABASE_PUBLISHABLE_KEY.startsWith("PASTE_")){
   $("catalog").innerHTML='<div class="notice"><b>Konfigurasi belum selesai.</b><br>Masukkan Publishable Key Supabase ke index.html lalu upload ulang ke GitHub Pages.</div>'; return;
+ }
+ if(!initSupabase()){
+   $("catalog").innerHTML='<div class="notice">Library Supabase belum termuat. Periksa koneksi internet dan refresh halaman.</div>';
+   return;
  }
  const {data,error}=await sb.from("products").select("*").order("sort_order",{ascending:true}).order("created_at",{ascending:false});
  if(error){console.error(error);$("catalog").innerHTML='<div class="notice">Gagal memuat katalog: '+esc(error.message)+'</div>';return}
@@ -131,8 +147,7 @@ async function saveProduct(){
 function editProduct(id){let p=products.find(x=>x.id===id);if(!p)return;let i=inventory[id]||{};editId=id;$("formTitle").textContent="Edit Produk";$("pBarcode").value=p.barcode||"";$("pBrand").value=p.brand||"";$("pName").value=p.name||"";$("pRam").value=p.ram_rom||"";$("pColor").value=p.color||"";$("pModal").value=i.modal_price??"";$("pSell").value=p.sell_price??"";$("pStoreStock").value=p.store_stock??0;$("pImage").value=p.image_url||"";$("pStock").value=p.stock_status||"READY";$("pStockMode").value=p.stock_mode||"MANUAL";window.scrollTo(0,0)}
 async function deleteProduct(id){if(!confirm("Hapus produk?"))return;let {error}=await sb.from("products").delete().eq("id",id);if(error)return alert("Gagal menghapus: "+error.message);await loadData();alert("Produk dihapus.")}
 function resetForm(){editId=null;$("formTitle").textContent="Tambah Produk";["pBarcode","pBrand","pName","pRam","pColor","pModal","pSell","pStoreStock","pImage"].forEach(k=>$(k).value="");$("pStock").value="READY";$("pStockMode").value="MANUAL"}
-function openLogin(){$("loginModal").classList.add("show")}function closeLogin(){$("loginModal").classList.remove("show");$("loginErr").textContent=""}
-async function login(){let email=$("loginUser").value.trim(),password=$("loginPass").value;let {error}=await sb.auth.signInWithPassword({email,password});if(error){$("loginErr").textContent="Email atau password salah.";return}closeLogin();$("customer").style.display="none";$("admin").classList.add("show");await loadData();renderAdmin()}
+async function login(){if(!initSupabase())return;let email=$("loginUser").value.trim(),password=$("loginPass").value;let {error}=await sb.auth.signInWithPassword({email,password});if(error){$("loginErr").textContent="Email atau password salah.";return}closeLogin();$("customer").style.display="none";$("admin").classList.add("show");await loadData();renderAdmin()}
 async function logout(){await sb.auth.signOut();$("admin").classList.remove("show");$("customer").style.display="block";renderCatalog()}
 function showTab(name,btn){["products","import","sync"].forEach(x=>$(x+"Tab").style.display=x===name?"block":"none");document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));btn.classList.add("active")}
 function parseCSV(text){let lines=text.trim().split(/\r?\n/);if(!lines.length)return[];let delim=lines[0].includes("\t")?"\t":",";let parseLine=line=>{let out=[],cur="",q=false;for(let i=0;i<line.length;i++){let c=line[i];if(c=='"'){if(q&&line[i+1]=='"'){cur+='"';i++}else q=!q}else if(c===delim&&!q){out.push(cur.trim());cur=""}else cur+=c}out.push(cur.trim());return out};let h=parseLine(lines[0]).map(x=>x.toLowerCase());return lines.slice(1).filter(x=>x.trim()).map(line=>{let a=parseLine(line),o={};h.forEach((k,i)=>o[k]=a[i]??"");return o})}
@@ -144,6 +159,6 @@ async function exportCSV(){if(!products.length)return alert("Belum ada produk.")
 function previewVituu(){let data=parseCSV($("vituuData").value);if(!data.length)return alert("Masukkan data VITUU.");let changes=[];for(let r of data){let barcode=String(r.barcode||r.sku||"");let p=products.find(x=>barcode&&x.barcode===barcode)||products.find(x=>x.brand===r.brand&&x.name===r.name);changes.push({r,p})}window.vituuChanges=changes;$("syncPreview").innerHTML=`<div class="notice"><b>${changes.length}</b> baris siap diproses.<br><br>${changes.map(x=>{let r=x.r,p=x.p;return `${esc(r.brand)} ${esc(r.name)} — ${p?`Modal ${money(inventory[p.id]?.modal_price)} → ${money(r.modal)}; Stok ${inventory[p.id]?.vituu_stock??0} → ${r.vituu_stock||0}`:"Produk baru (akan dibuat)"}`).join("<br>")}<br><br><button class="primary" onclick="applyVituu()">Terapkan Sinkronisasi</button></div>`}
 async function applyVituu(){let changes=window.vituuChanges||[];for(let x of changes){let r=x.r,p=x.p;if(!p){let n=await sb.from("products").insert({barcode:r.barcode||null,brand:r.brand||"",name:r.name||"",ram_rom:r.ram||"",color:r.color||"",sell_price:0,store_stock:0,stock_status:"HABIS",stock_mode:"MANUAL",image_url:null}).select().single();if(n.error)throw n.error;p=n.data}let {data:ex}=await sb.from("product_inventory").select("product_id").eq("product_id",p.id).maybeSingle();let stock=Number(r.vituu_stock)||0,status=String(r.vituu_status||"").toUpperCase(),modal=Number(r.modal)||0,ip={modal_price:modal,vituu_stock:stock,vituu_status:status,vituu_last_sync:new Date().toISOString()};let ir=ex?await sb.from("product_inventory").update(ip).eq("product_id",p.id):await sb.from("product_inventory").insert({product_id:p.id,...ip});if(ir.error)throw ir.error;if(p.stock_mode==="VITUU"){let pr=await sb.from("products").update({stock_status:(status==="READY"&&stock>0)?"READY":"HABIS",store_stock:stock}).eq("id",p.id);if(pr.error)throw pr.error}}await loadData();$("syncPreview").innerHTML=`<div class="notice">Sinkronisasi diterapkan pada ${changes.length} baris. <b>Harga jual tidak diubah.</b></div>`}
 function clearVituu(){$("vituuData").value="";$("syncPreview").innerHTML=""}
-(async()=>{try{if(new URLSearchParams(location.search).get("embed")==="1")document.body.classList.add("embed-mode")}catch(e){}let {data:{session}}=await sb.auth.getSession();if(session){$("customer").style.display="none";$("admin").classList.add("show")}await loadData()})();
+(async()=>{try{if(new URLSearchParams(location.search).get("embed")==="1")document.body.classList.add("embed-mode")}catch(e){}if(initSupabase()){let {data:{session}}=await sb.auth.getSession();if(session){$("customer").style.display="none";$("admin").classList.add("show")}}await loadData()})();
 </script>
 </body></html>
