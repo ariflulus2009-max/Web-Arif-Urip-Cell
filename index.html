@@ -82,6 +82,132 @@ body.embed-mode .hero{margin-bottom:14px}
 
 <div id="loginModal" class="modal"><div class="modalbox"><h2>Login Admin</h2><input id="loginUser" type="email" placeholder="Email Admin"><br><br><input id="loginPass" type="password" placeholder="Password"><br><br><div class="row"><button class="primary" onclick="login()">Masuk</button><button id="closeLoginBtn" type="button" class="secondary" onclick="closeLogin()">Batal</button></div><p id="loginErr" style="color:#c62828"></p></div></div>
 
+
+<script>
+/* V2.1 — Import Master Stok Arif Urip Cell */
+const AUC_MASTER_HEADERS = {
+  brand:["brand","merek"],
+  name:["produk","name","nama","tipe"],
+  ram:["ram/rom","ramrom","ram_rom","ram"],
+  modal:["harga modal","modal","hargamodal"],
+  sell:["harga jual","sell","hargajual","harga"],
+  stock:["stok","stock"],
+  vituuStatus:["status vituu","statusvituu","vituu_status"],
+  source:["sumber modal","sumbermodal"],
+  updated:["tanggal update","tanggalupdate"]
+};
+
+function aucNormKey(x){return String(x??"").toLowerCase().trim().replace(/[^a-z0-9]/g,"");}
+function aucFindCol(headers, keys){
+  const map={}; headers.forEach((h,i)=>map[aucNormKey(h)]=i);
+  for(const k of keys){const i=map[aucNormKey(k)]; if(i!==undefined) return i;}
+  return -1;
+}
+function aucNum(v){
+  if(typeof v==="number") return v;
+  const s=String(v??"").replace(/[^\d-]/g,"");
+  return Number(s)||0;
+}
+function aucMasterRows(rows){
+  if(!rows.length) return [];
+  const hs=Object.keys(rows[0]);
+  const c={};
+  for(const k in AUC_MASTER_HEADERS)c[k]=aucFindCol(hs,AUC_MASTER_HEADERS[k]);
+  if(c.brand<0 || c.name<0) throw Error("Kolom Master Stok tidak dikenali. Pastikan ada kolom Brand dan Produk.");
+  return rows.map((r,n)=>({
+    _row:n+2,
+    barcode:"",
+    brand:String(c.brand>=0?r[hs[c.brand]]:"").trim(),
+    name:String(c.name>=0?r[hs[c.name]]:"").trim(),
+    ram_rom:String(c.ram>=0?r[hs[c.ram]]:"").trim(),
+    color:"",
+    modal:aucNum(c.modal>=0?r[hs[c.modal]]:0),
+    sell:aucNum(c.sell>=0?r[hs[c.sell]]:0),
+    source:String(c.source>=0?r[hs[c.source]]:"").trim(),
+    updated:String(c.updated>=0?r[hs[c.updated]]:"").trim(),
+    vituu_stock:0,
+    vituu_status:String(c.vituuStatus>=0?r[hs[c.vituuStatus]]:"").trim().toUpperCase(),
+    raw_stock:String(c.stock>=0?r[hs[c.stock]]:"").trim()
+  })).filter(x=>x.brand||x.name);
+}
+
+function aucKey(x){return (x.brand+"|"+x.name+"|"+x.ram_rom).toLowerCase().replace(/\s+/g," ").trim();}
+function aucPreviewMaster(rows){
+  const a=aucMasterRows(rows);
+  const groups={};
+  a.forEach(x=>(groups[aucKey(x)]??=[]).push(x));
+  const dup=Object.values(groups).filter(g=>g.length>1);
+  const noSell=a.filter(x=>!x.sell);
+  const html = `<div class="notice">
+    <b>Preview Master Stok</b><br>
+    Total: <b>${a.length}</b> produk |
+    Harga jual terisi: <b>${a.length-noSell.length}</b> |
+    Harga jual kosong: <b>${noSell.length}</b> |
+    Duplikat kandidat: <b>${dup.length}</b>
+    ${dup.length?`<br><br><b>⚠️ Duplikat tidak akan digabung otomatis.</b> Produk yang sama akan ditampilkan untuk diperiksa.`:""}
+    <br><br><button class="primary" onclick="aucApplyMaster()">Terapkan Master Stok</button>
+  </div>`;
+  $("importPreview").innerHTML=html;
+  window.__aucMaster=a;
+}
+
+async function aucApplyMaster(){
+  if(!window.__aucMaster?.length) return alert("Belum ada preview Master Stok.");
+  let added=0, updated=0, skipped=0;
+  for(const d of window.__aucMaster){
+    // A product without selling price is stored as inactive, so it does not appear publicly.
+    const payload={
+      barcode:null, brand:d.brand, name:d.name, ram_rom:d.ram_rom, color:d.color,
+      sell_price:d.sell, stock_status:(d.vituu_status==="READY"?"READY":"HABIS"),
+      store_stock:0, stock_mode:"VITUU", image_url:null, is_active:!!d.sell
+    };
+    let {data:p,error}=await sb.from("products").select("*")
+      .eq("brand",d.brand).eq("name",d.name).eq("ram_rom",d.ram_rom).maybeSingle();
+    if(error){alert("Gagal mencari produk baris "+d._row+": "+error.message);return;}
+    if(p){
+      const r=await sb.from("products").update(payload).eq("id",p.id);
+      if(r.error){alert("Gagal memperbarui baris "+d._row+": "+r.error.message);return;}
+      updated++;
+      const ir=await sb.from("product_inventory").upsert({
+        product_id:p.id, modal_price:d.modal, vituu_stock:d.vituu_stock,
+        vituu_status:d.vituu_status||"-", vituu_last_sync:new Date().toISOString()
+      },{onConflict:"product_id"});
+      if(ir.error){alert("Inventory gagal pada baris "+d._row+": "+ir.error.message);return;}
+    } else {
+      const r=await sb.from("products").insert(payload).select().single();
+      if(r.error){
+        alert("Gagal menambah baris "+d._row+": "+r.error.message);
+        return;
+      }
+      added++;
+      const ir=await sb.from("product_inventory").insert({
+        product_id:r.data.id, modal_price:d.modal, vituu_stock:d.vituu_stock,
+        vituu_status:d.vituu_status||"-", vituu_last_sync:new Date().toISOString()
+      });
+      if(ir.error){alert("Inventory gagal pada baris "+d._row+": "+ir.error.message);return;}
+    }
+  }
+  await loadData();
+  $("importPreview").innerHTML=`<div class="notice">Master Stok selesai: <b>${added} baru</b>, <b>${updated} diperbarui</b>, <b>${skipped} dilewati</b>.<br>Produk tanpa harga jual disimpan sebagai tidak aktif sehingga tidak tampil ke pelanggan.</div>`;
+}
+
+const _aucOldPreviewImport = window.previewImport;
+window.previewImport = async function(){
+  const f=$("importFile").files[0];
+  if(!f) return alert("Pilih file dulu.");
+  try{
+    const rows=await readFile(f);
+    const isMaster=Object.keys(rows[0]||{}).some(h=>aucNormKey(h)==="brand")
+      && Object.keys(rows[0]||{}).some(h=>aucNormKey(h)==="produk");
+    if(isMaster){
+      aucPreviewMaster(rows);
+    } else {
+      await _aucOldPreviewImport();
+    }
+  }catch(e){alert(e.message)}
+};
+</script>
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 const SUPABASE_URL = "https://rsnhiksvrfgfgkmcqdhf.supabase.co";
