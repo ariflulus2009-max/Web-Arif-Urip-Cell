@@ -1,330 +1,339 @@
 <!doctype html>
 <html lang="id">
 <head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="Arif Urip Cell — Katalog & Inventory">
-<title>Arif Urip Cell — Katalog & Inventory V1</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="Arif Urip Cell — Katalog HP Ready">
+<title>Arif Urip Cell — Katalog HP Ready</title>
 <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
 <style>
-:root{--orange:#f58220;--black:#171717;--bg:#f5f6f8;--line:#e5e7eb;--muted:#6b7280;--green:#16803c;--red:#c62828}
-*{box-sizing:border-box}body{margin:0;background:var(--bg);color:#171717;font-family:Arial,sans-serif}button,input,select{font:inherit}
+:root{--orange:#f58220;--black:#171717;--bg:#f5f6f8;--line:#e5e7eb;--muted:#6b7280;--green:#16803c}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:#171717;font-family:Arial,sans-serif}
+button,input,select,textarea{font:inherit}button{border:0;border-radius:10px;padding:10px 13px;font-weight:800;cursor:pointer}
 header{background:var(--black);color:#fff;padding:15px 5%;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10}
 .logo{font-weight:900;font-size:20px}.logo span{color:var(--orange)}
-.container{max-width:1150px;margin:auto;padding:24px 5%}.hero{background:linear-gradient(135deg,#171717,#343434);color:white;border-radius:20px;padding:30px;margin-bottom:22px}.hero h1{margin:0 0 8px}.hero p{margin:0;color:#ddd}
-.controls{display:grid;grid-template-columns:2fr 1fr 1fr;gap:10px;margin-bottom:20px}input,select{padding:11px 12px;border:1px solid var(--line);border-radius:10px;background:white;width:100%}
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:16px}.card{background:white;border-radius:16px;overflow:hidden;box-shadow:0 3px 14px #0000000b}.photo{height:190px;background:#eee;display:flex;align-items:center;justify-content:center;font-size:50px;color:#aaa}.photo img{width:100%;height:100%;object-fit:cover}.body{padding:15px}.body h3{margin:0 0 6px}.muted{color:var(--muted);font-size:13px}.price{font-size:20px;font-weight:900;margin:10px 0}.ready{color:var(--green);font-weight:800}.sold{color:var(--red);font-weight:800}
-button{border:0;border-radius:10px;padding:10px 13px;font-weight:800;cursor:pointer}.primary{background:var(--orange);color:white}.secondary{background:#eee}.danger{background:#fee2e2;color:#991b1b}
-.admin{display:none}.admin.show{display:block}.tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px}.tab.active{background:var(--black);color:#fff}.panel{background:white;border-radius:16px;padding:18px;margin-bottom:18px}.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}.stat{background:#f8f8f8;padding:16px;border-radius:12px}.stat b{display:block;font-size:24px;margin-top:5px}.formgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}.full{grid-column:1/-1}.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}.tablewrap{overflow:auto}.table{border-collapse:collapse;width:100%;min-width:850px}.table th,.table td{padding:10px;border-bottom:1px solid #eee;text-align:left;font-size:13px;vertical-align:top}.badge{display:inline-block;padding:4px 7px;border-radius:999px;font-size:11px;font-weight:800}.bready{background:#dcfce7;color:#166534}.bhabis{background:#fee2e2;color:#991b1b}.notice{padding:12px;border-radius:10px;background:#fff7ed;margin-top:10px;font-size:13px}.modal{display:none;position:fixed;inset:0;background:#0008;z-index:30;align-items:center;justify-content:center;padding:20px}.modal.show{display:flex}.modal:target{display:flex}.modalbox{background:white;padding:22px;border-radius:16px;width:min(420px,100%)}footer{text-align:center;padding:30px;color:#777}
-@media(max-width:750px){.controls,.formgrid,.stats{grid-template-columns:1fr}.hero{padding:22px}}
-@media(max-width:700px){.container{padding:16px 3%}.hero{padding:22px 18px;border-radius:16px}.controls{grid-template-columns:1fr}.grid{grid-template-columns:repeat(auto-fill,minmax(165px,1fr));gap:12px}.card{border-radius:14px}.photo{height:155px}}
-/* Google Sites embed mode: open index.html?embed=1 */
-body.embed-mode header{position:relative}
-body.embed-mode .container{max-width:1250px;padding-top:12px}
-body.embed-mode .hero{margin-bottom:14px}
+.container{max-width:1150px;margin:auto;padding:24px 5%}
+.hero{background:linear-gradient(135deg,#171717,#343434);color:white;border-radius:20px;padding:32px;margin-bottom:20px}
+.hero h1{margin:0 0 8px;font-size:32px}.hero p{margin:0;color:#ddd}
+.hero small{display:block;margin-top:14px;color:#bbb}
+.controls{display:grid;grid-template-columns:2fr 1fr;gap:10px;margin-bottom:20px}
+input,select,textarea{padding:11px 12px;border:1px solid var(--line);border-radius:10px;background:white;width:100%}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:16px}
+.card{background:white;border-radius:16px;overflow:hidden;box-shadow:0 3px 14px #0000000b;cursor:pointer;transition:.15s}
+.card:hover{transform:translateY(-2px)}
+.photo{height:190px;background:#eee;display:flex;align-items:center;justify-content:center;font-size:50px;color:#aaa}
+.photo img{width:100%;height:100%;object-fit:cover}.body{padding:15px}.body h3{margin:0 0 6px}
+.brand{font-size:12px;font-weight:900;color:var(--orange);text-transform:uppercase}
+.muted{color:var(--muted);font-size:13px}.price{font-size:20px;font-weight:900;margin:10px 0}
+.ready{color:var(--green);font-weight:800}.primary{background:var(--orange);color:white}.secondary{background:#eee}
+.admin{display:none}.admin.show{display:block}.tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px}
+.tab.active{background:var(--black);color:#fff}.panel{background:white;border-radius:16px;padding:18px;margin-bottom:18px}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.stat{background:#f8f8f8;padding:16px;border-radius:12px}
+.stat b{display:block;font-size:24px;margin-top:5px}.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.notice{padding:12px;border-radius:10px;background:#fff7ed;margin-top:10px;font-size:13px}
+.tablewrap{overflow:auto}.table{border-collapse:collapse;width:100%;min-width:780px}
+.table th,.table td{padding:10px;border-bottom:1px solid #eee;text-align:left;font-size:13px;vertical-align:top}
+.badge{display:inline-block;padding:4px 7px;border-radius:999px;font-size:11px;font-weight:800;background:#dcfce7;color:#166534}
+.modal{display:none;position:fixed;inset:0;background:#0009;z-index:30;align-items:center;justify-content:center;padding:18px}
+.modal.show{display:flex}.modalbox{background:white;border-radius:18px;width:min(700px,100%);max-height:92vh;overflow:auto;padding:20px}
+.detailimg{width:100%;max-height:300px;object-fit:contain;background:#f4f4f4;border-radius:14px;margin-bottom:16px}
+.detail h2{margin:0 0 5px}.spec{white-space:pre-line;line-height:1.6;color:#444}
+.close{float:right;background:#eee;border-radius:50%;width:36px;height:36px;padding:0}
+footer{text-align:center;padding:30px;color:#777}
+@media(max-width:700px){.container{padding:16px 3%}.hero{padding:24px 18px}.hero h1{font-size:27px}.controls{grid-template-columns:1fr}.grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.photo{height:145px}.body{padding:12px}.price{font-size:18px}.stats{grid-template-columns:1fr}}
+body.embed-mode header{position:relative}body.embed-mode .container{max-width:1250px;padding-top:12px}
 </style>
 </head>
 <body>
-<header><div class="logo">ARIF <span>URIP</span> CELL</div><button id="adminBtn" type="button" class="secondary">Admin</button></header>
+<header>
+  <div class="logo">ARIF <span>URIP</span> CELL</div>
+  <button id="adminBtn" type="button" class="secondary">Admin</button>
+</header>
 
 <main id="customer" class="container">
-<section class="hero"><h1>Katalog HP</h1><p>Anda Pesan, Kami Antar, Insya Allah Berkah.</p></section>
-<div class="controls"><input id="search" placeholder="Cari merek / tipe / barcode..." oninput="renderCatalog()"><select id="brandFilter" onchange="renderCatalog()"><option value="">Semua Merek</option></select><select id="stockFilter" onchange="renderCatalog()"><option value="">Semua Stok</option><option value="READY">Ready</option><option value="HABIS">Habis</option></select></div>
-<div id="catalog" class="grid"></div>
+  <section class="hero">
+    <h1>HP READY ARIF URIP CELL</h1>
+    <p>Anda Pesan, Kami Antar, Insya Allah Berkah.</p>
+    <small>Katalog menampilkan produk yang sedang READY.</small>
+  </section>
+
+  <div class="controls">
+    <input id="search" placeholder="Cari brand / tipe / RAM-ROM..." oninput="renderCatalog()">
+    <select id="brandFilter" onchange="renderCatalog()"><option value="">Semua Brand</option></select>
+  </div>
+  <div id="catalog" class="grid"></div>
 </main>
 
 <section id="admin" class="container admin">
-<div class="row" style="justify-content:space-between"><h2>Admin Arif Urip Cell</h2><button class="secondary" onclick="logout()">Keluar</button></div>
-<div class="stats"><div class="stat">Produk<b id="statProducts">0</b></div><div class="stat">Ready<b id="statReady">0</b></div><div class="stat">Habis<b id="statSold">0</b></div><div class="stat">Modal Total<b id="statModal">Rp0</b></div></div>
-<br>
-<div class="tabs">
-<button class="tab active" onclick="showTab('products',this)">📱 Produk</button>
-<button class="tab" onclick="showTab('import',this)">📥 Import</button>
-<button class="tab" onclick="showTab('sync',this)">🔄 Sinkronisasi VITUU</button>
-<button class="tab" onclick="exportCSV()">📤 Export CSV</button>
-</div>
+  <div class="row" style="justify-content:space-between">
+    <h2>Admin Arif Urip Cell</h2><button class="secondary" onclick="logout()">Keluar</button>
+  </div>
 
-<div id="productsTab">
-<div class="panel"><h3 id="formTitle">Tambah Produk</h3>
-<div class="formgrid">
-<input id="pBarcode" placeholder="Barcode / SKU">
-<input id="pBrand" placeholder="Merek">
-<input id="pName" placeholder="Nama / tipe">
-<input id="pRam" placeholder="RAM/ROM">
-<input id="pColor" placeholder="Warna">
-<input id="pModal" type="number" placeholder="Harga Modal">
-<input id="pSell" type="number" placeholder="Harga Jual">
-<select id="pStock"><option>READY</option><option>HABIS</option></select>
-<input id="pStoreStock" type="number" min="0" placeholder="Stok Toko (angka)">
-<select id="pStockMode"><option value="MANUAL">Stok Toko: Manual</option><option value="VITUU">Stok Toko: Ikuti VITUU</option></select>
-<input id="pImage" class="full" placeholder="URL foto produk (opsional)">
-</div><br><div class="row"><button class="primary" onclick="saveProduct()">Simpan</button><button class="secondary" onclick="resetForm()">Batal</button></div>
-</div>
-<div class="panel"><h3>Daftar Produk</h3><div class="tablewrap"><table class="table"><thead><tr><th>Produk</th><th>Barcode</th><th>Modal</th><th>Jual</th><th>Stok VITUU</th><th>Stok Toko</th><th>Aksi</th></tr></thead><tbody id="rows"></tbody></table></div></div>
-</div>
+  <div class="stats">
+    <div class="stat">Total Produk<b id="statProducts">0</b></div>
+    <div class="stat">READY<b id="statReady">0</b></div>
+    <div class="stat">Tidak READY<b id="statSold">0</b></div>
+  </div>
+  <br>
 
-<div id="importTab" style="display:none">
-<div class="panel"><h3>Import Excel / CSV</h3>
-<p class="muted">Gunakan template yang disertakan. Untuk Excel (.xlsx), browser membutuhkan koneksi internet untuk library pembaca Excel. CSV bisa digunakan tanpa library tambahan.</p>
-<input type="file" id="importFile" accept=".xlsx,.xls,.csv">
-<br><br><button class="primary" onclick="previewImport()">Preview Import</button>
-<div id="importPreview"></div>
-</div></div>
+  <div class="tabs">
+    <button class="tab active" onclick="showTab('import',this)">📥 Upload Master Stok</button>
+    <button class="tab" onclick="showTab('products',this)">📱 Daftar Produk</button>
+    <button class="tab" onclick="exportCSV()">📤 Export Master</button>
+  </div>
 
-<div id="syncTab" style="display:none">
-<div class="panel"><h3>🔄 Sinkronisasi VITUU (manual)</h3>
-<p>Versi V1 menyediakan alur sinkronisasi: data sumber → preview → terapkan. Pada prototype ini Anda dapat memasukkan/menempel data sumber VITUU dalam CSV untuk menguji prosesnya. Koneksi langsung ke VITUU akan dibuat setelah metode akses data mereka dipastikan.</p>
-<textarea id="vituuData" style="width:100%;min-height:160px;padding:12px;border:1px solid var(--line);border-radius:10px" placeholder="barcode,brand,name,ram,color,modal,vituu_stock,vituu_status&#10;899001,Samsung,Galaxy A27 5G,8/256,Black,6100000,5,READY"></textarea>
-<br><br><div class="row"><button class="primary" onclick="previewVituu()">Preview Sinkronisasi</button><button class="secondary" onclick="clearVituu()">Bersihkan</button></div>
-<div id="syncPreview"></div>
-</div></div>
+  <div id="importTab">
+    <div class="panel">
+      <h3>📥 Upload 1 File Master Stok</h3>
+      <p class="muted">
+        Satu file menjadi sumber utama website. Kolom penting:
+        <b>Brand, Produk, RAM/ROM, Harga Modal, Harga Jual, READY, Foto, Deskripsi</b>.
+        Harga modal hanya untuk admin dan tidak pernah ditampilkan ke pelanggan.
+      </p>
+      <input type="file" id="importFile" accept=".xlsx,.xls,.csv">
+      <br><br>
+      <button class="primary" onclick="previewImport()">Preview File</button>
+      <div id="importPreview"></div>
+    </div>
+
+    <div class="panel">
+      <h3>Format yang disarankan</h3>
+      <div class="notice">
+        <b>Brand</b> | <b>Produk</b> | <b>RAM/ROM</b> | <b>Harga Modal</b> | <b>Harga Jual</b> | <b>READY</b> | <b>Foto</b> | <b>Deskripsi</b><br><br>
+        Contoh: SAMSUNG | A17 4G | 8+128GB | 3700000 | 4290000 | YA | URL_FOTO | Deskripsi dari brosur resmi terbaru
+      </div>
+    </div>
+  </div>
+
+  <div id="productsTab" style="display:none">
+    <div class="panel">
+      <h3>Daftar Produk</h3>
+      <p class="muted">Harga modal hanya terlihat di area admin.</p>
+      <div class="tablewrap"><table class="table">
+        <thead><tr><th>Produk</th><th>Modal</th><th>Harga Jual</th><th>Status</th><th>Aksi</th></tr></thead>
+        <tbody id="rows"></tbody>
+      </table></div>
+    </div>
+  </div>
 </section>
 
-<footer>Arif Urip Cell • Katalog & Inventory V2 • Supabase</footer>
+<footer>Arif Urip Cell • Katalog HP Ready</footer>
 
-<div id="loginModal" class="modal"><div class="modalbox"><h2>Login Admin</h2><input id="loginUser" type="email" placeholder="Email Admin"><br><br><input id="loginPass" type="password" placeholder="Password"><br><br><div class="row"><button class="primary" onclick="login()">Masuk</button><button id="closeLoginBtn" type="button" class="secondary" onclick="closeLogin()">Batal</button></div><p id="loginErr" style="color:#c62828"></p></div></div>
+<div id="loginModal" class="modal">
+  <div class="modalbox">
+    <h2>Login Admin</h2>
+    <input id="loginUser" type="email" placeholder="Email Admin"><br><br>
+    <input id="loginPass" type="password" placeholder="Password"><br><br>
+    <div class="row"><button class="primary" onclick="login()">Masuk</button><button class="secondary" onclick="closeLogin()">Batal</button></div>
+    <p id="loginErr" style="color:#c62828"></p>
+  </div>
+</div>
 
-
-<script>
-/* V2.1 — Import Master Stok Arif Urip Cell */
-const AUC_MASTER_HEADERS = {
-  brand:["brand","merek"],
-  name:["produk","name","nama","tipe"],
-  ram:["ram/rom","ramrom","ram_rom","ram"],
-  modal:["harga modal","modal","hargamodal"],
-  sell:["harga jual","sell","hargajual","harga"],
-  stock:["stok","stock"],
-  vituuStatus:["status vituu","statusvituu","vituu_status"],
-  source:["sumber modal","sumbermodal"],
-  updated:["tanggal update","tanggalupdate"]
-};
-
-function aucNormKey(x){return String(x??"").toLowerCase().trim().replace(/[^a-z0-9]/g,"");}
-function aucFindCol(headers, keys){
-  const map={}; headers.forEach((h,i)=>map[aucNormKey(h)]=i);
-  for(const k of keys){const i=map[aucNormKey(k)]; if(i!==undefined) return i;}
-  return -1;
-}
-function aucNum(v){
-  if(typeof v==="number") return v;
-  const s=String(v??"").replace(/[^\d-]/g,"");
-  return Number(s)||0;
-}
-function aucMasterRows(rows){
-  if(!rows.length) return [];
-  const hs=Object.keys(rows[0]);
-  const c={};
-  for(const k in AUC_MASTER_HEADERS)c[k]=aucFindCol(hs,AUC_MASTER_HEADERS[k]);
-  if(c.brand<0 || c.name<0) throw Error("Kolom Master Stok tidak dikenali. Pastikan ada kolom Brand dan Produk.");
-  return rows.map((r,n)=>({
-    _row:n+2,
-    barcode:"",
-    brand:String(c.brand>=0?r[hs[c.brand]]:"").trim(),
-    name:String(c.name>=0?r[hs[c.name]]:"").trim(),
-    ram_rom:String(c.ram>=0?r[hs[c.ram]]:"").trim(),
-    color:"",
-    modal:aucNum(c.modal>=0?r[hs[c.modal]]:0),
-    sell:aucNum(c.sell>=0?r[hs[c.sell]]:0),
-    source:String(c.source>=0?r[hs[c.source]]:"").trim(),
-    updated:String(c.updated>=0?r[hs[c.updated]]:"").trim(),
-    vituu_stock:0,
-    vituu_status:String(c.vituuStatus>=0?r[hs[c.vituuStatus]]:"").trim().toUpperCase(),
-    raw_stock:String(c.stock>=0?r[hs[c.stock]]:"").trim()
-  })).filter(x=>x.brand||x.name);
-}
-
-function aucKey(x){return (x.brand+"|"+x.name+"|"+x.ram_rom).toLowerCase().replace(/\s+/g," ").trim();}
-function aucPreviewMaster(rows){
-  const a=aucMasterRows(rows);
-  const groups={};
-  a.forEach(x=>(groups[aucKey(x)]??=[]).push(x));
-  const dup=Object.values(groups).filter(g=>g.length>1);
-  const noSell=a.filter(x=>!x.sell);
-  const html = `<div class="notice">
-    <b>Preview Master Stok</b><br>
-    Total: <b>${a.length}</b> produk |
-    Harga jual terisi: <b>${a.length-noSell.length}</b> |
-    Harga jual kosong: <b>${noSell.length}</b> |
-    Duplikat kandidat: <b>${dup.length}</b>
-    ${dup.length?`<br><br><b>⚠️ Duplikat tidak akan digabung otomatis.</b> Produk yang sama akan ditampilkan untuk diperiksa.`:""}
-    <br><br><button class="primary" onclick="aucApplyMaster()">Terapkan Master Stok</button>
-  </div>`;
-  $("importPreview").innerHTML=html;
-  window.__aucMaster=a;
-}
-
-async function aucApplyMaster(){
-  if(!window.__aucMaster?.length) return alert("Belum ada preview.");
-  if(!sb && !initSupabase()) return;
-  const all=window.__aucMaster, total=all.length;
-  let added=0,updated=0,skipped=0,errors=[];
-  const box=$("importPreview");
-  box.innerHTML=`<div class="notice"><b>Import V2.3 sedang berjalan...</b><br><span id="aucProgress">0 / ${total}</span><div style="margin-top:8px;background:#eee;border-radius:999px;height:12px;overflow:hidden"><div id="aucBar" style="width:0%;height:100%;background:var(--orange)"></div></div><p id="aucLast" class="muted">Menyiapkan...</p></div>`;
-  const progress=(n,msg)=>{
-    let pct=Math.round(n/total*100);
-    if($("aucBar"))$("aucBar").style.width=pct+"%";
-    if($("aucProgress"))$("aucProgress").textContent=`${n} / ${total} (${pct}%)`;
-    if($("aucLast"))$("aucLast").textContent=msg||"";
-  };
-  const makePayload=d=>({
-    barcode:d.barcode||null,brand:d.brand||"",name:d.name||"",ram_rom:d.ram_rom||"",
-    color:d.color||"",sell_price:Number(d.sell)||0,
-    stock_status:(String(d.vituu_status).toUpperCase()==="READY"||String(d.raw_stock).toUpperCase()==="READY")?"READY":"HABIS",
-    store_stock:Number(d.storeStock)||0,stock_mode:(String(d.stockMode||"MANUAL").toUpperCase()==="VITUU"?"VITUU":"MANUAL"),
-    image_url:d.image||null,is_active:Number(d.sell)>0
-  });
-  async function one(d){
-    if(!d.name) return "skip";
-    let q=sb.from("products").select("id");
-    q=d.barcode ? q.eq("barcode",d.barcode) : q.eq("brand",d.brand).eq("name",d.name).eq("ram_rom",d.ram_rom||"");
-    const qr=await q.limit(1);
-    if(qr.error) throw qr.error;
-    let pid, wasNew=false;
-    if(qr.data?.length){
-      pid=qr.data[0].id;
-      const r=await sb.from("products").update(makePayload(d)).eq("id",pid);
-      if(r.error)throw r.error; updated++; 
-    }else{
-      const r=await sb.from("products").insert(makePayload(d)).select("id").single();
-      if(r.error)throw r.error; pid=r.data.id; wasNew=true; added++;
-    }
-    const ir=await sb.from("product_inventory").upsert({
-      product_id:pid,modal_price:Number(d.modal)||0,vituu_stock:Number(d.vituu_stock)||0,
-      vituu_status:d.vituu_status||"-",vituu_last_sync:new Date().toISOString()
-    },{onConflict:"product_id"});
-    if(ir.error)throw ir.error;
-    return wasNew?"new":"updated";
-  }
-
-  // Process in small batches. If a batch fails, split it so the exact bad row is identified,
-  // while all valid rows continue importing.
-  const batchSize=10;
-  for(let base=0;base<total;base+=batchSize){
-    const batch=all.slice(base,base+batchSize);
-    let batchFailed=false;
-    try{
-      for(const d of batch){
-        const result=await one(d);
-        if(result==="skip")skipped++;
-        progress(Math.min(base+batch.length,total),`Memproses baris ${base+1}-${Math.min(base+batch.length,total)}...`);
-      }
-    }catch(e){
-      batchFailed=true;
-    }
-    if(batchFailed){
-      for(let j=0;j<batch.length;j++){
-        const d=batch[j];
-        try{
-          const result=await one(d);
-          if(result==="skip")skipped++;
-          progress(base+j+1,`Baris ${d._row}: ${d.brand} ${d.name} — berhasil.`);
-        }catch(e){
-          errors.push({row:d._row,name:`${d.brand||""} ${d.name||""}`.trim(),message:e.message||String(e)});
-          progress(base+j+1,`⚠️ Baris ${d._row}: ${e.message||e}`);
-        }
-      }
-    }
-    await new Promise(r=>setTimeout(r,50));
-  }
-
-  await loadData();
-  const details=errors.length?`<details open style="margin-top:10px"><summary><b>${errors.length} baris error — klik untuk melihat</b></summary><div style="max-height:300px;overflow:auto;margin-top:8px">${errors.map(x=>`<div style="padding:7px 0;border-bottom:1px solid #eee"><b>Excel baris ${x.row}</b> — ${esc(x.name)}<br><span class="muted">${esc(x.message)}</span></div>`).join("")}</div></details>`:"<div style='margin-top:8px;color:var(--green);font-weight:800'>Semua baris berhasil diproses.</div>";
-  box.innerHTML=`<div class="notice"><b>Import V2.3 selesai</b><br>Total: <b>${total}</b><br>Baru: <b>${added}</b><br>Diperbarui: <b>${updated}</b><br>Dilewati: <b>${skipped}</b><br>Error: <b>${errors.length}</b>${details}</div>`;
-}
-
-const _aucOldPreviewImport = window.previewImport;
-window.previewImport = async function(){
-  const f=$("importFile").files[0];
-  if(!f) return alert("Pilih file dulu.");
-  try{
-    const rows=await readFile(f);
-    const isMaster=Object.keys(rows[0]||{}).some(h=>aucNormKey(h)==="brand")
-      && Object.keys(rows[0]||{}).some(h=>aucNormKey(h)==="produk");
-    if(isMaster){
-      aucPreviewMaster(rows);
-    } else {
-      await _aucOldPreviewImport();
-    }
-  }catch(e){alert(e.message)}
-};
-</script>
-
+<div id="detailModal" class="modal" onclick="if(event.target===this)closeDetail()">
+  <div class="modalbox detail">
+    <button class="close" onclick="closeDetail()">✕</button>
+    <div id="detailContent"></div>
+  </div>
+</div>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 const SUPABASE_URL = "https://rsnhiksvrfgfgkmcqdhf.supabase.co";
 const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_QANLOYAZcvPWWjVaIksE1Q_bJp-TxPB";
-let sb = null;
 const WA = "6282183345533";
+let sb=null, products=[], inventory={}, importRows=[];
 
-function openLogin(){ $("loginModal").classList.add("show"); }
-function wireAdminButton(){ const b=$("adminBtn"); if(b) b.addEventListener("click",openLogin); const c=$("closeLoginBtn"); if(c) c.addEventListener("click",closeLogin); }
-function closeLogin(){ $("loginModal").classList.remove("show"); $("loginErr").textContent=""; }
-
-function initSupabase(){
-  if (!window.supabase) {
-    $("loginErr").textContent = "Koneksi library Supabase belum siap. Pastikan internet aktif, lalu coba lagi.";
-    return false;
-  }
-  if (!sb) sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
-  return true;
-}
-
-let products=[], inventory={}, editId=null, importRows=[];
 const $=id=>document.getElementById(id);
 const money=n=>new Intl.NumberFormat("id-ID",{style:"currency",currency:"IDR",maximumFractionDigits:0}).format(Number(n)||0);
 function esc(s){return String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]))}
 
-async function loadData(){
- if(SUPABASE_PUBLISHABLE_KEY.startsWith("PASTE_")){
-  $("catalog").innerHTML='<div class="notice"><b>Konfigurasi belum selesai.</b><br>Masukkan Publishable Key Supabase ke index.html lalu upload ulang ke GitHub Pages.</div>'; return;
- }
- if(!initSupabase()){
-   $("catalog").innerHTML='<div class="notice">Library Supabase belum termuat. Periksa koneksi internet dan refresh halaman.</div>';
-   return;
- }
- const {data,error}=await sb.from("products").select("*").order("sort_order",{ascending:true}).order("created_at",{ascending:false});
- if(error){console.error(error);$("catalog").innerHTML='<div class="notice">Gagal memuat katalog: '+esc(error.message)+'</div>';return}
- products=data||[]; inventory={};
- const {data:inv}=await sb.from("product_inventory").select("*");
- (inv||[]).forEach(x=>inventory[x.product_id]=x);
- renderCatalog(); renderAdmin();
+function initSupabase(){
+  if(!window.supabase){$("loginErr").textContent="Library Supabase belum siap.";return false}
+  if(!sb) sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY);
+  return true
 }
-function initFilters(){let bs=[...new Set(products.map(p=>p.brand).filter(Boolean))].sort();$("brandFilter").innerHTML='<option value="">Semua Merek</option>'+bs.map(b=>`<option value="${esc(b)}">${esc(b)}</option>`).join("")}
-function renderCatalog(){
- initFilters();let q=$("search").value.toLowerCase(),b=$("brandFilter").value,s=$("stockFilter").value;
- let list=products.filter(p=>(p.brand+" "+p.name+" "+(p.barcode||"")+" "+(p.ram_rom||"")+" "+(p.color||"")).toLowerCase().includes(q)&&(!b||p.brand===b)&&(!s||p.stock_status===s));
- $("catalog").innerHTML=list.length?list.map(p=>{let ready=p.stock_status==="READY";return `<article class="card"><div class="photo">${p.image_url?`<img src="${esc(p.image_url)}" alt="${esc(p.name)}">`:"📱"}</div><div class="body"><h3>${esc(p.brand)} ${esc(p.name)}</h3><div class="muted">${esc(p.ram_rom||"")}<br>Warna: ${esc(p.color||"")}</div><div class="price">${money(p.sell_price)}</div><div class="${ready?"ready":"sold"}">${ready?"READY":"HABIS"} • ${Number(p.store_stock||0)} unit</div><br><button class="primary" ${!ready?"disabled":""} onclick="order(${p.id})">Pesan via WhatsApp</button></div></article>`}).join(""):"<p>Produk tidak ditemukan.</p>";
+function wireAdminButton(){
+  $("adminBtn").addEventListener("click",()=>{ $("loginModal").classList.add("show"); $("loginUser").focus(); });
 }
-function order(id){let p=products.find(x=>x.id===id);if(!p)return;let msg=`Assalamu'alaikum, saya ingin pesan ${p.brand} ${p.name} ${p.ram_rom||""}. Warna: ${p.color||"-"}. Harga: ${money(p.sell_price)}. Apakah stok masih tersedia?`;location.href=`https://wa.me/${WA}?text=${encodeURIComponent(msg)}`}
-function renderAdmin(){
- if(!$("admin").classList.contains("show"))return;
- $("statProducts").textContent=products.length;$("statReady").textContent=products.filter(p=>p.stock_status==="READY").length;$("statSold").textContent=products.filter(p=>p.stock_status==="HABIS").length;$("statModal").textContent=money(products.reduce((a,p)=>a+(Number(inventory[p.id]?.modal_price)||0)*(Number(p.store_stock)||0),0));
- $("rows").innerHTML=products.map(p=>{let i=inventory[p.id]||{};return `<tr><td><b>${esc(p.brand)} ${esc(p.name)}</b><br><span class="muted">${esc(p.ram_rom||"")} • ${esc(p.color||"")}</span></td><td>${esc(p.barcode||"")}</td><td>${money(i.modal_price)}</td><td>${money(p.sell_price)}</td><td>${i.vituu_stock??0}<br><span class="badge ${i.vituu_status==="READY"?"bready":"bhabis"}">${esc(i.vituu_status||"-")}</span></td><td>${p.store_stock??0}<br>${esc(p.stock_status)}</td><td><button class="secondary" onclick="editProduct(${p.id})">Edit</button> <button class="danger" onclick="deleteProduct(${p.id})">Hapus</button></td></tr>`}).join("");
+function closeLogin(){ $("loginModal").classList.remove("show"); $("loginErr").textContent=""; }
+async function login(){
+  if(!initSupabase())return;
+  const email=$("loginUser").value.trim(), password=$("loginPass").value;
+  const {error}=await sb.auth.signInWithPassword({email,password});
+  if(error){$("loginErr").textContent="Email atau password salah.";return}
+  closeLogin(); $("customer").style.display="none"; $("admin").classList.add("show"); await loadData(); renderAdmin();
 }
-async function saveProduct(){
- let d={barcode:$("pBarcode").value.trim()||null,brand:$("pBrand").value.trim(),name:$("pName").value.trim(),ram_rom:$("pRam").value.trim(),color:$("pColor").value.trim(),sell_price:Number($("pSell").value)||0,stock_status:$("pStock").value,store_stock:Number($("pStoreStock").value)||0,stock_mode:$("pStockMode").value,image_url:$("pImage").value.trim()||null};
- let modal=Number($("pModal").value)||0;if(!d.brand||!d.name||!d.sell_price)return alert("Merek, nama/tipe, dan harga jual wajib diisi.");
- let pid=editId;
- if(editId){let {error}=await sb.from("products").update(d).eq("id",editId);if(error)return alert("Gagal menyimpan produk: "+error.message)}
- else {let {data,error}=await sb.from("products").insert(d).select().single();if(error)return alert("Gagal menambah produk: "+error.message);pid=data.id}
- let {data:ex}=await sb.from("product_inventory").select("product_id").eq("product_id",pid).maybeSingle();
- let r=ex?await sb.from("product_inventory").update({modal_price:modal}).eq("product_id",pid):await sb.from("product_inventory").insert({product_id:pid,modal_price:modal});
- if(r.error)return alert("Produk tersimpan, tetapi harga modal gagal disimpan: "+r.error.message);
- resetForm();await loadData();alert("Produk tersimpan ke database online.");
-}
-function editProduct(id){let p=products.find(x=>x.id===id);if(!p)return;let i=inventory[id]||{};editId=id;$("formTitle").textContent="Edit Produk";$("pBarcode").value=p.barcode||"";$("pBrand").value=p.brand||"";$("pName").value=p.name||"";$("pRam").value=p.ram_rom||"";$("pColor").value=p.color||"";$("pModal").value=i.modal_price??"";$("pSell").value=p.sell_price??"";$("pStoreStock").value=p.store_stock??0;$("pImage").value=p.image_url||"";$("pStock").value=p.stock_status||"READY";$("pStockMode").value=p.stock_mode||"MANUAL";window.scrollTo(0,0)}
-async function deleteProduct(id){if(!confirm("Hapus produk?"))return;let {error}=await sb.from("products").delete().eq("id",id);if(error)return alert("Gagal menghapus: "+error.message);await loadData();alert("Produk dihapus.")}
-function resetForm(){editId=null;$("formTitle").textContent="Tambah Produk";["pBarcode","pBrand","pName","pRam","pColor","pModal","pSell","pStoreStock","pImage"].forEach(k=>$(k).value="");$("pStock").value="READY";$("pStockMode").value="MANUAL"}
-async function login(){if(!initSupabase())return;let email=$("loginUser").value.trim(),password=$("loginPass").value;let {error}=await sb.auth.signInWithPassword({email,password});if(error){$("loginErr").textContent="Email atau password salah.";return}closeLogin();$("customer").style.display="none";$("admin").classList.add("show");await loadData();renderAdmin()}
 async function logout(){await sb.auth.signOut();$("admin").classList.remove("show");$("customer").style.display="block";renderCatalog()}
-function showTab(name,btn){["products","import","sync"].forEach(x=>$(x+"Tab").style.display=x===name?"block":"none");document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));btn.classList.add("active")}
-function parseCSV(text){let lines=text.trim().split(/\r?\n/);if(!lines.length)return[];let delim=lines[0].includes("\t")?"\t":",";let parseLine=line=>{let out=[],cur="",q=false;for(let i=0;i<line.length;i++){let c=line[i];if(c=='"'){if(q&&line[i+1]=='"'){cur+='"';i++}else q=!q}else if(c===delim&&!q){out.push(cur.trim());cur=""}else cur+=c}out.push(cur.trim());return out};let h=parseLine(lines[0]).map(x=>x.toLowerCase());return lines.slice(1).filter(x=>x.trim()).map(line=>{let a=parseLine(line),o={};h.forEach((k,i)=>o[k]=a[i]??"");return o})}
-async function readFile(file){if(file.name.toLowerCase().endsWith(".csv"))return parseCSV(await file.text());if(typeof XLSX==="undefined")throw Error("Library Excel belum tersedia. Gunakan CSV atau buka dengan internet.");let wb=XLSX.read(await file.arrayBuffer(),{type:"array"}),ws=wb.Sheets[wb.SheetNames[0]];return XLSX.utils.sheet_to_json(ws,{defval:""})}
-async function previewImport(){let f=$("importFile").files[0];if(!f)return alert("Pilih file dulu.");try{importRows=await readFile(f);if(!importRows.length)return alert("Tidak ada data.");let cols=Object.keys(importRows[0]);$("importPreview").innerHTML=`<div class="notice"><b>${importRows.length} baris</b> terbaca. Kolom: ${cols.join(", ")}<br><br><button class="primary" onclick="applyImport()">Terapkan Import</button></div>`}catch(e){alert(e.message)}}
-function norm(o){let get=(...keys)=>{for(let k of keys){let x=Object.keys(o).find(z=>z.toLowerCase().replace(/[^a-z0-9]/g,"")===k.replace(/[^a-z0-9]/g,""));if(x)return o[x]}return""};return{barcode:String(get("barcode","sku")),brand:String(get("brand","merek")),name:String(get("name","nama","tipe")),ram_rom:String(get("ram","ramrom")),color:String(get("color","warna")),modal:Number(String(get("modal","hargamodal")).replace(/\D/g,""))||0,sell:Number(String(get("sell","hargajual","harga")).replace(/\D/g,""))||0,stock:String(get("stock","statusstok")||"READY").toUpperCase(),storeStock:Number(get("storeStock","stokToko","stocktoko"))||0,vituuStock:Number(get("vituu_stock","stokvituu"))||0,vituuStatus:String(get("vituu_status","statusvituu")||"-").toUpperCase(),stockMode:String(get("stockMode","modestok")||"MANUAL").toUpperCase(),image:String(get("image","foto","urlfoto"))}}
-async function applyImport(){let added=0,updated=0;for(let raw of importRows){let d=norm(raw);if(!d.name&&!d.barcode)continue;let q=d.barcode?sb.from("products").select("*").eq("barcode",d.barcode).maybeSingle():sb.from("products").select("*").eq("brand",d.brand).eq("name",d.name).maybeSingle();let {data:p,error:qe}=await q;if(qe)throw qe;let payload={barcode:d.barcode||null,brand:d.brand,name:d.name,ram_rom:d.ram_rom,color:d.color,sell_price:d.sell,stock_status:d.stock==="READY"?"READY":"HABIS",store_stock:d.storeStock,stock_mode:d.stockMode==="VITUU"?"VITUU":"MANUAL",image_url:d.image||null};let pid;if(p){pid=p.id;let r=await sb.from("products").update(payload).eq("id",pid);if(r.error)throw r.error;updated++}else{let r=await sb.from("products").insert(payload).select().single();if(r.error)throw r.error;pid=r.data.id;added++}let {data:ex}=await sb.from("product_inventory").select("product_id").eq("product_id",pid).maybeSingle();let ip={modal_price:d.modal,vituu_stock:d.vituuStock,vituu_status:d.vituuStatus};let r=ex?await sb.from("product_inventory").update(ip).eq("product_id",pid):await sb.from("product_inventory").insert({product_id:pid,...ip});if(r.error)throw r.error}await loadData();$("importPreview").innerHTML=`<div class="notice">Import selesai: <b>${added} baru</b>, <b>${updated} diperbarui</b>.</div>`}
-async function exportCSV(){if(!products.length)return alert("Belum ada produk.");let cols=["barcode","brand","name","ram_rom","color","modal","sell","vituu_stock","vituu_status","store_stock","stock_status","stock_mode","image"];let csv=[cols.join(","),...products.map(p=>{let i=inventory[p.id]||{},r={barcode:p.barcode||"",brand:p.brand,name:p.name,ram_rom:p.ram_rom||"",color:p.color||"",modal:i.modal_price||0,sell:p.sell_price||0,vituu_stock:i.vituu_stock||0,vituu_status:i.vituu_status||"-",store_stock:p.store_stock||0,stock_status:p.stock_status||"",stock_mode:p.stock_mode||"MANUAL",image:p.image_url||""};return cols.map(c=>`"${String(r[c]??"").replace(/"/g,'""')}"`).join(",")})].join("\n");let a=document.createElement("a");a.href=URL.createObjectURL(new Blob(["\ufeff"+csv],{type:"text/csv;charset=utf-8"}));a.download="arif-urip-cell-produk.csv";a.click()}
-function previewVituu(){let data=parseCSV($("vituuData").value);if(!data.length)return alert("Masukkan data VITUU.");let changes=[];for(let r of data){let barcode=String(r.barcode||r.sku||"");let p=products.find(x=>barcode&&x.barcode===barcode)||products.find(x=>x.brand===r.brand&&x.name===r.name);changes.push({r,p})}window.vituuChanges=changes;let html=changes.map(x=>{let r=x.r,p=x.p;let detail=p?`Modal ${money(inventory[p.id]?.modal_price)} → ${money(r.modal)}; Stok ${inventory[p.id]?.vituu_stock??0} → ${r.vituu_stock||0}`:"Produk baru (akan dibuat)";return `${esc(r.brand)} ${esc(r.name)} — ${detail}`}).join("<br>");$("syncPreview").innerHTML=`<div class="notice"><b>${changes.length}</b> baris siap diproses.<br><br>${html}<br><br><button class="primary" onclick="applyVituu()">Terapkan Sinkronisasi</button></div>`}
-async function applyVituu(){let changes=window.vituuChanges||[];for(let x of changes){let r=x.r,p=x.p;if(!p){let n=await sb.from("products").insert({barcode:r.barcode||null,brand:r.brand||"",name:r.name||"",ram_rom:r.ram||"",color:r.color||"",sell_price:0,store_stock:0,stock_status:"HABIS",stock_mode:"MANUAL",image_url:null}).select().single();if(n.error)throw n.error;p=n.data}let {data:ex}=await sb.from("product_inventory").select("product_id").eq("product_id",p.id).maybeSingle();let stock=Number(r.vituu_stock)||0,status=String(r.vituu_status||"").toUpperCase(),modal=Number(r.modal)||0,ip={modal_price:modal,vituu_stock:stock,vituu_status:status,vituu_last_sync:new Date().toISOString()};let ir=ex?await sb.from("product_inventory").update(ip).eq("product_id",p.id):await sb.from("product_inventory").insert({product_id:p.id,...ip});if(ir.error)throw ir.error;if(p.stock_mode==="VITUU"){let pr=await sb.from("products").update({stock_status:(status==="READY"&&stock>0)?"READY":"HABIS",store_stock:stock}).eq("id",p.id);if(pr.error)throw pr.error}}await loadData();$("syncPreview").innerHTML=`<div class="notice">Sinkronisasi diterapkan pada ${changes.length} baris. <b>Harga jual tidak diubah.</b></div>`}
-function clearVituu(){$("vituuData").value="";$("syncPreview").innerHTML=""}
-(async()=>{try{if(new URLSearchParams(location.search).get("embed")==="1")document.body.classList.add("embed-mode")}catch(e){}wireAdminButton();if(initSupabase()){let {data:{session}}=await sb.auth.getSession();if(session){$("customer").style.display="none";$("admin").classList.add("show")}}await loadData()})();
+
+async function loadData(){
+  if(!initSupabase())return;
+  const r=await sb.from("products").select("*").order("brand",{ascending:true}).order("name",{ascending:true});
+  if(r.error){$("catalog").innerHTML='<div class="notice">Gagal memuat katalog: '+esc(r.error.message)+'</div>';return}
+  products=r.data||[];
+  const ir=await sb.from("product_inventory").select("*");
+  inventory={}; (ir.data||[]).forEach(x=>inventory[x.product_id]=x);
+  renderCatalog(); renderAdmin();
+}
+function initFilters(){
+  const brands=[...new Set(products.map(p=>p.brand).filter(Boolean))].sort();
+  const old=$("brandFilter").value;
+  $("brandFilter").innerHTML='<option value="">Semua Brand</option>'+brands.map(b=>`<option>${esc(b)}</option>`).join("");
+  $("brandFilter").value=brands.includes(old)?old:"";
+}
+function renderCatalog(){
+  initFilters();
+  const q=$("search").value.toLowerCase(), b=$("brandFilter").value;
+  const list=products.filter(p=>
+    p.stock_status==="READY" &&
+    (!b||p.brand===b) &&
+    (p.brand+" "+p.name+" "+(p.ram_rom||"")).toLowerCase().includes(q)
+  );
+  $("catalog").innerHTML=list.length?list.map(p=>`
+    <article class="card" onclick="openDetail(${p.id})">
+      <div class="photo">${p.image_url?`<img src="${esc(p.image_url)}" alt="${esc(p.brand+" "+p.name)}">`:"📱"}</div>
+      <div class="body">
+        <div class="brand">${esc(p.brand)}</div>
+        <h3>${esc(p.name)}</h3>
+        <div class="muted">${esc(p.ram_rom||"")}</div>
+        <div class="price">${money(p.sell_price)}</div>
+        <div class="ready">● READY</div>
+      </div>
+    </article>`).join(""):"<div class='notice'>Belum ada produk READY yang sesuai pencarian.</div>";
+}
+function openDetail(id){
+  const p=products.find(x=>x.id===id); if(!p||p.stock_status!=="READY")return;
+  $("detailContent").innerHTML=`
+    ${p.image_url?`<img class="detailimg" src="${esc(p.image_url)}" alt="${esc(p.name)}">`:""}
+    <div class="brand">${esc(p.brand)}</div>
+    <h2>${esc(p.name)}</h2>
+    <div class="muted">${esc(p.ram_rom||"")}</div>
+    <div class="price">${money(p.sell_price)}</div>
+    <div class="ready">● READY</div>
+    ${p.description?`<hr><h3>Deskripsi & Spesifikasi</h3><div class="spec">${esc(p.description)}</div>`:""}
+    <br>
+    <button class="primary" style="width:100%;font-size:16px" onclick="order(${p.id})">💬 Pesan via WhatsApp</button>`;
+  $("detailModal").classList.add("show");
+}
+function closeDetail(){$("detailModal").classList.remove("show")}
+function order(id){
+  const p=products.find(x=>x.id===id);if(!p)return;
+  const msg=`Assalamu'alaikum, saya ingin pesan ${p.brand} ${p.name} ${p.ram_rom||""}. Harga ${money(p.sell_price)}. Apakah stoknya masih tersedia?`;
+  location.href=`https://wa.me/${WA}?text=${encodeURIComponent(msg)}`
+}
+function renderAdmin(){
+  if(!$("admin").classList.contains("show"))return;
+  $("statProducts").textContent=products.length;
+  $("statReady").textContent=products.filter(p=>p.stock_status==="READY").length;
+  $("statSold").textContent=products.filter(p=>p.stock_status!=="READY").length;
+  $("rows").innerHTML=products.map(p=>{
+    const i=inventory[p.id]||{};
+    return `<tr><td><b>${esc(p.brand)} ${esc(p.name)}</b><br><span class="muted">${esc(p.ram_rom||"")}</span></td>
+    <td>${money(i.modal_price)}</td><td>${money(p.sell_price)}</td>
+    <td><span class="badge">${p.stock_status==="READY"?"READY":"TIDAK READY"}</span></td>
+    <td><button class="secondary" onclick="toggleReady(${p.id},event)">${p.stock_status==="READY"?"Set Tidak Ready":"Set Ready"}</button></td></tr>`
+  }).join("");
+}
+async function toggleReady(id,event){
+  event.stopPropagation();
+  const p=products.find(x=>x.id===id);if(!p)return;
+  const status=p.stock_status==="READY"?"HABIS":"READY";
+  const r=await sb.from("products").update({stock_status:status}).eq("id",id);
+  if(r.error)return alert("Gagal mengubah status: "+r.error.message);
+  await loadData();
+}
+function showTab(name,btn){
+  ["import","products"].forEach(x=>$(x+"Tab").style.display=x===name?"block":"none");
+  document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active")); if(btn)btn.classList.add("active");
+}
+function parseCSV(text){
+  const lines=text.trim().split(/\r?\n/);if(!lines.length||!lines[0])return[];
+  const delim=lines[0].includes("\t")?"\t":",";
+  const parseLine=line=>{let o=[],c="",q=false;for(let i=0;i<line.length;i++){let ch=line[i];
+    if(ch=='"'){if(q&&line[i+1]=='"'){c+='"';i++}else q=!q}
+    else if(ch===delim&&!q){o.push(c.trim());c=""}else c+=ch}o.push(c.trim());return o};
+  const h=parseLine(lines[0]).map(x=>x.trim().toLowerCase());
+  return lines.slice(1).filter(x=>x.trim()).map(line=>{const a=parseLine(line),o={};h.forEach((k,i)=>o[k]=a[i]??"");return o})
+}
+async function readFile(file){
+  if(file.name.toLowerCase().endsWith(".csv"))return parseCSV(await file.text());
+  const wb=XLSX.read(await file.arrayBuffer(),{type:"array"}), ws=wb.Sheets[wb.SheetNames[0]];
+  return XLSX.utils.sheet_to_json(ws,{defval:""});
+}
+function keyNorm(s){return String(s??"").toLowerCase().trim().replace(/[^a-z0-9]/g,"")}
+function getCol(o,names){
+  const keys=Object.keys(o);for(const n of names){const k=keyNorm(n), hit=keys.find(x=>keyNorm(x)===k);if(hit!==undefined)return o[hit]}return""
+}
+function num(v){if(typeof v==="number")return v;return Number(String(v??"").replace(/[^\d-]/g,""))||0}
+function normalizeRow(o){
+  const ready=String(getCol(o,["ready","status","stock","stok","status stok"])).trim().toUpperCase();
+  return {
+    brand:String(getCol(o,["brand","merek"])).trim(),
+    name:String(getCol(o,["produk","name","nama","tipe"])).trim(),
+    ram_rom:String(getCol(o,["ram/rom","ram_rom","ramrom","ram"])).trim(),
+    modal:num(getCol(o,["harga modal","modal","hargamodal"])),
+    sell:num(getCol(o,["harga jual","sell","hargajual","harga"])),
+    ready:["YA","YES","READY","1","TRUE","Y"].includes(ready),
+    image:String(getCol(o,["foto","image","image_url","url foto","urlfoto"])).trim(),
+    description:String(getCol(o,["deskripsi","description","spesifikasi","detail"])).trim()
+  }
+}
+async function previewImport(){
+  const f=$("importFile").files[0];if(!f)return alert("Pilih file Master Stok dulu.");
+  try{
+    importRows=(await readFile(f)).map(normalizeRow).filter(x=>x.brand||x.name);
+    if(!importRows.length)return alert("Tidak ada data produk yang terbaca.");
+    const bad=importRows.filter(x=>!x.brand||!x.name||!x.sell);
+    const ready=importRows.filter(x=>x.ready).length;
+    $("importPreview").innerHTML=`<div class="notice"><b>${importRows.length}</b> produk terbaca.
+      <br>READY: <b>${ready}</b> • Tidak READY: <b>${importRows.length-ready}</b> • Data wajib kurang: <b>${bad.length}</b>
+      <br><br><b>Catatan:</b> saat diterapkan, status READY website disinkronkan mengikuti file ini. Harga modal tetap internal.
+      ${bad.length?`<br><br>⚠️ Baris bermasalah akan dilewati: ${bad.slice(0,8).map(x=>esc(x.brand+" "+x.name)).join(", ")}${bad.length>8?" ...":""}`:""}
+      <br><br><button class="primary" onclick="applyImport()">Terapkan Master Stok</button></div>`;
+  }catch(e){alert("Gagal membaca file: "+e.message)}
+}
+async function applyImport(){
+  if(!importRows.length)return;
+  if(!confirm("Terapkan Master Stok sekarang?\\n\\nProduk yang ada di file akan diperbarui. Produk lama yang tidak ada di file akan dibuat TIDAK READY agar tidak tampil di website."))return;
+  let valid=importRows.filter(x=>x.brand&&x.name&&x.sell), added=0,updated=0,errors=[];
+  // Full sync: first hide all current products, then upsert rows from the file.
+  const hide=await sb.from("products").update({stock_status:"HABIS"}).not("id","is",null);
+  if(hide.error)return alert("Gagal menyiapkan sinkronisasi: "+hide.error.message);
+  for(const d of valid){
+    try{
+      const q=await sb.from("products").select("id").eq("brand",d.brand).eq("name",d.name).eq("ram_rom",d.ram_rom||"").limit(1);
+      if(q.error)throw q.error;
+      let pid;
+      const payload={brand:d.brand,name:d.name,ram_rom:d.ram_rom||"",sell_price:d.sell,stock_status:d.ready?"READY":"HABIS",image_url:d.image||null,description:d.description||null,is_active:true};
+      if(q.data?.length){
+        pid=q.data[0].id; const r=await sb.from("products").update(payload).eq("id",pid);if(r.error)throw r.error;updated++;
+      }else{
+        const r=await sb.from("products").insert(payload).select("id").single();if(r.error)throw r.error;pid=r.data.id;added++;
+      }
+      const inv=await sb.from("product_inventory").select("product_id").eq("product_id",pid).maybeSingle();
+      const ip={modal_price:d.modal};
+      const ir=inv.data?await sb.from("product_inventory").update(ip).eq("product_id",pid):await sb.from("product_inventory").insert({product_id:pid,modal_price:d.modal});
+      if(ir.error)throw ir.error;
+    }catch(e){errors.push(d.brand+" "+d.name+": "+(e.message||e))}
+  }
+  await loadData();
+  $("importPreview").innerHTML=`<div class="notice"><b>Import selesai.</b><br>${added} produk baru • ${updated} produk diperbarui • ${errors.length} error.
+  ${errors.length?`<br><br>${errors.map(esc).join("<br>")}`:""}</div>`;
+}
+async function exportCSV(){
+  if(!products.length)return alert("Belum ada produk.");
+  const rows=[["Brand","Produk","RAM/ROM","Harga Modal","Harga Jual","READY","Foto","Deskripsi"]];
+  products.forEach(p=>{const i=inventory[p.id]||{};rows.push([p.brand,p.name,p.ram_rom||"",i.modal_price||0,p.sell_price||0,p.stock_status==="READY"?"YA":"TIDAK",p.image_url||"",p.description||""])});
+  const csv=rows.map(r=>r.map(v=>`"${String(v??"").replace(/"/g,'""')}"`).join(",")).join("\n");
+  const a=document.createElement("a");a.href=URL.createObjectURL(new Blob(["\ufeff"+csv],{type:"text/csv;charset=utf-8"}));a.download="Arif_Urip_Cell_Master_Stok.csv";a.click();
+}
+(async()=>{
+  try{if(new URLSearchParams(location.search).get("embed")==="1")document.body.classList.add("embed-mode")}catch(e){}
+  wireAdminButton();
+  if(initSupabase()){
+    const {data:{session}}=await sb.auth.getSession();
+    if(session){$("customer").style.display="none";$("admin").classList.add("show")}
+  }
+  await loadData();
+})();
 </script>
+
 </body></html>
