@@ -153,42 +153,61 @@ function aucPreviewMaster(rows){
 
 async function aucApplyMaster(){
   if(!window.__aucMaster?.length) return alert("Belum ada preview Master Stok.");
-  let added=0, updated=0, skipped=0;
-  for(const d of window.__aucMaster){
-    // A product without selling price is stored as inactive, so it does not appear publicly.
-    const payload={
-      barcode:null, brand:d.brand, name:d.name, ram_rom:d.ram_rom, color:d.color,
-      sell_price:d.sell, stock_status:(d.vituu_status==="READY"?"READY":"HABIS"),
-      store_stock:0, stock_mode:"VITUU", image_url:null, is_active:!!d.sell
-    };
-    let {data:p,error}=await sb.from("products").select("*")
-      .eq("brand",d.brand).eq("name",d.name).eq("ram_rom",d.ram_rom).maybeSingle();
-    if(error){alert("Gagal mencari produk baris "+d._row+": "+error.message);return;}
-    if(p){
-      const r=await sb.from("products").update(payload).eq("id",p.id);
-      if(r.error){alert("Gagal memperbarui baris "+d._row+": "+r.error.message);return;}
-      updated++;
-      const ir=await sb.from("product_inventory").upsert({
-        product_id:p.id, modal_price:d.modal, vituu_stock:d.vituu_stock,
-        vituu_status:d.vituu_status||"-", vituu_last_sync:new Date().toISOString()
-      },{onConflict:"product_id"});
-      if(ir.error){alert("Inventory gagal pada baris "+d._row+": "+ir.error.message);return;}
-    } else {
-      const r=await sb.from("products").insert(payload).select().single();
-      if(r.error){
-        alert("Gagal menambah baris "+d._row+": "+r.error.message);
-        return;
+  if(!sb && !initSupabase()) return;
+  const all=window.__aucMaster, total=all.length;
+  let added=0, updated=0, skipped=0, errors=[];
+  const preview=$("importPreview");
+  preview.innerHTML=`<div class="notice"><b>Import sedang berjalan...</b><br><span id="aucProgress">0 / ${total}</span><div style="margin-top:8px;background:#eee;border-radius:999px;height:12px;overflow:hidden"><div id="aucBar" style="width:0%;height:100%;background:var(--orange)"></div></div><p id="aucLast" class="muted">Menyiapkan data...</p></div>`;
+  const progress=(n,last)=>{
+    const pct=Math.round(n/total*100);
+    if($("aucBar"))$("aucBar").style.width=pct+"%";
+    if($("aucProgress"))$("aucProgress").textContent=`${n} / ${total} (${pct}%)`;
+    if($("aucLast"))$("aucLast").textContent=last||"";
+  };
+  for(let idx=0;idx<total;idx++){
+    const d=all[idx];
+    try{
+      if(!d.name){skipped++;progress(idx+1,`Baris ${d._row}: nama kosong, dilewati.`);continue;}
+      if(d.sell<0||d.modal<0)throw Error("Harga tidak boleh negatif.");
+      const payload={
+        barcode:d.barcode||null,brand:d.brand,name:d.name,ram_rom:d.ram_rom||"",
+        color:d.color||"",sell_price:d.sell||0,
+        stock_status:(d.vituu_status==="READY"||String(d.raw_stock).toUpperCase()==="READY")?"READY":"HABIS",
+        store_stock:Number(d.storeStock)||0,stock_mode:"VITUU",
+        image_url:d.image||null,is_active:!!d.sell
+      };
+      let query=sb.from("products").select("*");
+      query=d.barcode?query.eq("barcode",d.barcode):query.eq("brand",d.brand).eq("name",d.name).eq("ram_rom",d.ram_rom||"");
+      const qr=await query.limit(1);
+      if(qr.error)throw qr.error;
+      let pid;
+      if(qr.data?.length){
+        pid=qr.data[0].id;
+        const r=await sb.from("products").update(payload).eq("id",pid);
+        if(r.error)throw r.error;
+        updated++;
+      }else{
+        const r=await sb.from("products").insert(payload).select().single();
+        if(r.error)throw r.error;
+        pid=r.data.id;added++;
       }
-      added++;
-      const ir=await sb.from("product_inventory").insert({
-        product_id:r.data.id, modal_price:d.modal, vituu_stock:d.vituu_stock,
-        vituu_status:d.vituu_status||"-", vituu_last_sync:new Date().toISOString()
-      });
-      if(ir.error){alert("Inventory gagal pada baris "+d._row+": "+ir.error.message);return;}
+      const ir=await sb.from("product_inventory").upsert({
+        product_id:pid,modal_price:Number(d.modal)||0,
+        vituu_stock:Number(d.vituu_stock)||0,vituu_status:d.vituu_status||"-",
+        vituu_last_sync:new Date().toISOString()
+      },{onConflict:"product_id"});
+      if(ir.error)throw ir.error;
+      progress(idx+1,`Baris ${d._row}: ${d.brand} ${d.name} — berhasil.`);
+      await new Promise(r=>setTimeout(r,35));
+    }catch(e){
+      errors.push({row:d._row,name:`${d.brand||""} ${d.name||""}`.trim(),message:e.message||String(e)});
+      progress(idx+1,`⚠️ Baris ${d._row}: ${e.message||e}`);
+      await new Promise(r=>setTimeout(r,35));
     }
   }
   await loadData();
-  $("importPreview").innerHTML=`<div class="notice">Master Stok selesai: <b>${added} baru</b>, <b>${updated} diperbarui</b>, <b>${skipped} dilewati</b>.<br>Produk tanpa harga jual disimpan sebagai tidak aktif sehingga tidak tampil ke pelanggan.</div>`;
+  const detail=errors.length?`<details style="margin-top:10px"><summary><b>Detail ${errors.length} error</b></summary><div style="max-height:260px;overflow:auto;margin-top:8px">${errors.map(x=>`<div style="padding:6px 0;border-bottom:1px solid #eee"><b>Baris ${x.row}</b> — ${esc(x.name)}<br><span class="muted">${esc(x.message)}</span></div>`).join("")}</div></details>`:`<div style="margin-top:8px;color:var(--green);font-weight:800">Semua baris berhasil diproses.</div>`;
+  preview.innerHTML=`<div class="notice"><b>Import selesai</b><br>Total diproses: <b>${total}</b><br>Produk baru: <b>${added}</b><br>Produk diperbarui: <b>${updated}</b><br>Dilewati: <b>${skipped}</b><br>Error: <b>${errors.length}</b>${detail}</div>`;
 }
 
 const _aucOldPreviewImport = window.previewImport;
